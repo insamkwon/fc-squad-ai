@@ -1,0 +1,190 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: contain;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Responsive touch optimization: eliminate 300ms tap delay on interactive elements */
+button, a, [role="button"], [role="tab"], input[type="submit"] {
+  touch-action: manipulation;
+}
+
+/* Prevent text selection on interactive elements */
+button, [role="button"] {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Hide scrollbar for carousel */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Prevent iOS Safari rubber-band overscroll on fixed/sticky elements */
+@supports (-webkit-touch-callout: none) {
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Safe area padding for notched devices */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Ensure touch targets meet minimum 44px on mobile */
+@layer utilities {
+  .tap-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Responsive container that constrains on mobile for pitch views */
+  .pitch-container {
+    max-width: calc(100vw - 2rem);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  @media (min-width: 640px) {
+    .pitch-container {
+      max-width: 28rem; /* 448px */
+    }
+  }
+
+  @media (min-width: 768px) {
+    .pitch-container {
+      max-width: 32rem; /* 512px */
+    }
+  }
+}
+
+/* Bottom sheet slide-up animation */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Fade in animation */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+/* Backdrop fade-in */
+@keyframes backdrop-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-backdrop-fade {
+  animation: backdrop-fade-in 0.2s ease-out;
+}
+
+/* Landscape mode: prevent viewport issues on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .landscape-compact {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+}
+
+/* Improve scroll performance on mobile */
+.scroll-smooth-mobile {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Prevent pull-to-refresh in app-like context */
+html, body {
+  overscroll-behavior: none;
+}
+
+/* Formation pitch container: touch-optimized, prevents accidental zoom on pinch */
+.formation-pitch-container {
+  touch-action: manipulation;
+}
+
+/* Formation player slot: ensure touch target is at least 36px for pitch cards,
+   44px for empty slots (handled via inset-2 expansion). Cards are allowed to be
+   smaller since they're dense information displays, but interactive area is larger. */
+.tap-target-formation {
+  position: relative;
+}
+
+.tap-target-formation::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 8px;
+}
+
+/* Compact pitch card: limit width for very small screens */
+@media (max-width: 360px) {
+  .pitch-card-compact {
+    max-width: 64px;
+    font-size: 9px;
+  }
+}
+
+/* Mobile formation overlay: prevent scroll when interacting with formation */
+.formation-overlay-no-scroll {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: auto;
+}
+
+/* Zoomable container: prevent scroll during zoom gestures */
+.formation-zoom-active {
+  touch-action: none;
+  overflow: hidden;
+}
+
+/* Chemistry line touch tooltip: mobile-optimized positioning */
+@media (max-width: 640px) {
+  .chem-tooltip-mobile {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    max-width: 80vw;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* Improve mobile card touch feedback: subtle scale on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  button:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+  }
+}

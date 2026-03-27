@@ -1,0 +1,36 @@
+goal: Build FC Online AI-based squad recommendation and player database responsive
+  web application using Next.js with natural language chat interface, FUTBIN-style
+  formation visualization (SVG pitch + player cards + chemistry lines), and budget-aware
+  squad building
+task_type: code
+constraints:
+  - Single developer, personal portfolio project
+  - No login required (stateless, React state only)
+  - Mobile responsive design (primary usage on mobile)
+  - Budget/price data is mandatory for squad building
+  - Use Next.js 14+ (App Router) + Tailwind CSS + TypeScript
+  - Use Gemini API or GLM API for AI features
+  - Deploy to Vercel (free tier)
+  - Price data sourced from fconline-player-search details.csv (MIT license) as initial seed
+  - Community crawling from Inven FC Online pages max 3x daily (06:00, 14:00, 22:00)
+  - Cross-verify price data with Nexon Data Center Daily Trade
+  - Background crawl to DB cache to SSG/ISR serving so users never wait for crawl
+  - Reference FO4-data-crawling (JadenHeo/FO4-data-crawling) open-source architecture for crawl implementation
+  - FUTBIN-style full custom formation visualization with SVG football pitch, player cards showing OVR/stats/price, chemistry link lines between same-team players, fully responsive on mobile
+  - Nexon FC Online Open API (app_id=258842, NEXON_API_KEY env var) for player metadata
+  - NO market price endpoint available from Nexon API, must use crawling for price data
+acceptance_criteria:
+  - Next.js 14+ project with TypeScript and Tailwind CSS initialized, builds and runs without errors
+  - Player database search by name works accurately with Korean and English name support
+  - Filter players by position, team, season, and stat range
+  - Same player different season cards displayed separately in search results
+  - Compare up to 3 players side-by-side with stat comparison UI
+  - Natural language input parsed by AI and generates squad recommendations
+  - Filter/form UI with formation selector, budget range, and team color selection generates squad recommendations
+  - AI provides 3 distinct squad candidates per request
+  - Vague inputs apply reasonable defaults
+  - FUTBIN-style SVG football pitch with player cards showing OVR and key stats and price
+  - Squad result screen shows formation visualization, per-player key stats, total cost, and team color synergy info
+  - Entire user flow works seamlessly on mobile
+  - Price data loads from details.csv seed, background crawl updates prices 3x daily
+  - Application deployed on Vercel, accessible via URL, works on mobile
