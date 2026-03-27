@@ -94,7 +94,9 @@ function rowToPlayer(row: PlayerRow): Player {
  */
 function loadFromJsonFile(): Player[] | null {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { readFileSync, existsSync } = require('node:fs') as typeof import('node:fs');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { join } = require('node:path') as typeof import('node:path');
     const jsonPath = join(process.cwd(), 'data', 'players.json');
 
