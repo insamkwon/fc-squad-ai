@@ -16,7 +16,8 @@
     "seed:reset": "node --import tsx scripts/seed-db.ts --reset",
     "seed:stats": "node --import tsx scripts/seed-db.ts --stats",
     "db:generate": "drizzle-kit generate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "deploy": "bash scripts/deploy.sh"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
