@@ -317,11 +317,12 @@ export interface VerificationSummary {
  * Configuration for the cross-verification service.
  */
 export interface CrossVerificationConfig {
-  /** Threshold for 'minor' discrepancy (relative diff <= this) */
+  /** Threshold for 'none' discrepancy (relative diff <= this) */
   minorThreshold: number;    // default: 0.10 (10%)
-  /** Threshold for 'moderate' discrepancy (relative diff <= this, > minor) */
+  /** Threshold for 'minor' discrepancy (relative diff <= this, > minorThreshold) */
   moderateThreshold: number;  // default: 0.25 (25%)
-  /** Above moderateThreshold is 'severe' */
+  /** Threshold for 'moderate' discrepancy (relative diff <= this, > moderateThreshold); above is 'severe' */
+  severeThreshold: number;   // default: 0.50 (50%)
   /** Weight given to Nexon price in weighted average reconciliation */
   nexonWeight: number;        // default: 0.7
   /** Weight given to Inven price in weighted average reconciliation */
@@ -334,6 +335,8 @@ export interface CrossVerificationConfig {
   verifiedConfidenceBoost: number;   // default: 0.15
   /** Confidence boost for prices within moderate threshold */
   moderateConfidenceBoost: number;   // default: 0.05
+  /** Confidence penalty for prices with moderate discrepancy */
+  moderateConfidencePenalty: number; // default: 0.15
   /** Confidence penalty for prices with severe discrepancy */
   severeConfidencePenalty: number;   // default: 0.25
   /** Confidence boost for Nexon-only prices with high trade count */
@@ -346,12 +349,14 @@ export interface CrossVerificationConfig {
 export const DEFAULT_CROSS_VERIFICATION_CONFIG: CrossVerificationConfig = {
   minorThreshold: 0.10,
   moderateThreshold: 0.25,
+  severeThreshold: 0.50,
   nexonWeight: 0.7,
   invenWeight: 0.3,
   minNexonTradeCount: 3,
   highConfidenceTradeCount: 10,
   verifiedConfidenceBoost: 0.15,
   moderateConfidenceBoost: 0.05,
+  moderateConfidencePenalty: 0.15,
   severeConfidencePenalty: 0.25,
   nexonHighConfidenceBoost: 0.2,
 };

@@ -239,11 +239,16 @@ export class CrossVerificationService {
   // -------------------------------------------------------------------------
 
   /**
-   * Classify the severity of a price discrepancy.
+   * Classify the severity of a price discrepancy into 4 tiers:
+   * - none: ≤ 10% difference
+   * - minor: 10–25% difference
+   * - moderate: 25–50% difference
+   * - severe: > 50% difference
    */
   private classifyDiscrepancy(relativeDiff: number): DiscrepancyLevel {
     if (relativeDiff <= this.config.minorThreshold) return 'none';
     if (relativeDiff <= this.config.moderateThreshold) return 'minor';
+    if (relativeDiff <= this.config.severeThreshold) return 'moderate';
     return 'severe';
   }
 
@@ -318,6 +323,9 @@ export class CrossVerificationService {
         } else if (level === 'minor') {
           confidenceDelta = this.config.moderateConfidenceBoost;
           explanation = `Minor discrepancy of ${diffPct}% (Inven: ${invenPrice.toLocaleString()} vs Nexon: ${nexonPrice.toLocaleString()}). Small confidence boost +${confidenceDelta.toFixed(2)}.`;
+        } else if (level === 'moderate') {
+          confidenceDelta = -this.config.moderateConfidencePenalty;
+          explanation = `Moderate discrepancy of ${diffPct}% (Inven: ${invenPrice.toLocaleString()} vs Nexon: ${nexonPrice.toLocaleString()}). Confidence penalized by ${confidenceDelta.toFixed(2)}. Low Nexon trade count (${tradeCount}) — price kept for now.`;
         } else {
           confidenceDelta = -this.config.severeConfidencePenalty;
           explanation = `Severe discrepancy of ${diffPct}% (Inven: ${invenPrice.toLocaleString()} vs Nexon: ${nexonPrice.toLocaleString()}). Confidence penalized by ${confidenceDelta.toFixed(2)}. Low Nexon trade count (${tradeCount}) — price kept for now.`;
@@ -341,10 +349,13 @@ export class CrossVerificationService {
           nexonPrice * this.config.nexonWeight +
           invenPrice * this.config.invenWeight,
         );
-        const confidenceDelta =
-          relativeDiff <= this.config.minorThreshold
-            ? this.config.verifiedConfidenceBoost
-            : this.config.moderateConfidenceBoost;
+        let confidenceDelta: number;
+        if (level === 'minor') {
+          confidenceDelta = this.config.moderateConfidenceBoost;
+        } else {
+          // moderate level in weighted_average
+          confidenceDelta = 0;
+        }
 
         return {
           reconciledPrice,

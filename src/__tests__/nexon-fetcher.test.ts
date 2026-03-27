@@ -2,7 +2,7 @@
  * Tests for the Nexon Data Center trade fetcher.
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { NexonFetcher } from '@/lib/price-crawl/fetchers/nexon-fetcher';
 
 describe('NexonFetcher', () => {
@@ -28,6 +28,13 @@ describe('NexonFetcher', () => {
     it('should report unconfigured when no API key', () => {
       const unconfigured = new NexonFetcher({ apiKey: '' });
       expect(unconfigured.isConfigured).toBe(false);
+    });
+
+    it('should use env var NEXON_API_KEY', () => {
+      process.env.NEXON_API_KEY = 'env-key';
+      const envFetcher = new NexonFetcher({ apiKey: '' });
+      expect(envFetcher.isConfigured).toBe(true);
+      delete process.env.NEXON_API_KEY;
     });
   });
 
@@ -58,7 +65,19 @@ describe('NexonFetcher', () => {
 
   describe('cross verification', () => {
     it('should boost confidence for close prices', () => {
-      const tradeData = new Map([[1, { spid: 1, avgPrice: 1000, minPrice: 900, maxPrice: 1100, tradeCount: 5, date: '20250101' }]]);
+      const tradeData = new Map([
+        [
+          1,
+          {
+            spid: 1,
+            avgPrice: 1000,
+            minPrice: 900,
+            maxPrice: 1100,
+            tradeCount: 5,
+            date: '20250101',
+          },
+        ],
+      ]);
       const result = fetcher.crossVerify(1, 990, tradeData);
 
       expect(result.verified).toBe(true);
@@ -66,7 +85,19 @@ describe('NexonFetcher', () => {
     });
 
     it('should reduce confidence for divergent prices', () => {
-      const tradeData = new Map([[1, { spid: 1, avgPrice: 1000, minPrice: 800, maxPrice: 1200, tradeCount: 5, date: '20250101' }]]);
+      const tradeData = new Map([
+        [
+          1,
+          {
+            spid: 1,
+            avgPrice: 1000,
+            minPrice: 800,
+            maxPrice: 1200,
+            tradeCount: 5,
+            date: '20250101',
+          },
+        ],
+      ]);
       const result = fetcher.crossVerify(1, 2000, tradeData);
 
       expect(result.verified).toBe(false);
@@ -79,6 +110,35 @@ describe('NexonFetcher', () => {
 
       expect(result.verified).toBe(false);
       expect(result.adjustedConfidence).toBe(0);
+    });
+  });
+
+  describe('data center trade data', () => {
+    it('should have fetchDataCenterTradeData method', () => {
+      expect(typeof fetcher.fetchDataCenterTradeData).toBe('function');
+    });
+
+    it('should return empty array when not configured', async () => {
+      const unconfigured = new NexonFetcher({ apiKey: '' });
+      const tradeData = await unconfigured.fetchDataCenterTradeData();
+      expect(tradeData).toEqual([]);
+    });
+
+    it('should attempt to fetch from data center (may fail with test key)', async () => {
+      const tradeData = await fetcher.fetchDataCenterTradeData();
+      expect(Array.isArray(tradeData)).toBe(true);
+      // May or may not have results depending on API availability
+    });
+  });
+
+  describe('date formatting', () => {
+    it('should format date in KST timezone', () => {
+      // Create a date that would differ in UTC vs KST
+      const dateStr = fetcher['formatDateKst'](new Date('2025-01-15T20:00:00Z'));
+      // In KST (UTC+9), this would be Jan 16
+      expect(dateStr).toMatch(/^\d{8}$/);
+      // The date should be '20250116' in KST
+      expect(dateStr).toBe('20250116');
     });
   });
 });
