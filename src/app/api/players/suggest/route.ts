@@ -21,6 +21,8 @@ const MAX_LIMIT = 20;
 const DEFAULT_LIMIT = 8;
 
 export async function GET(request: NextRequest) {
+  await playerStore.loadPriceOverlayFromBlob();
+
   const { searchParams } = request.nextUrl;
 
   const rawQuery = searchParams.get('q') ?? '';

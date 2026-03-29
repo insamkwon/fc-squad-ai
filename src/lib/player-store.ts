@@ -144,6 +144,7 @@ class PlayerStore {
   private players: Player[];
   private searchIndex: Map<number, SearchIndexEntry>;
   private initialized = false;
+  private priceOverlayLoaded = false;
 
   constructor() {
     this.players = [];
@@ -455,6 +456,40 @@ class PlayerStore {
     }
 
     return { updated };
+  }
+
+  /**
+   * Load price overlay from Vercel Blob and apply to players.
+   * Called once per serverless instance on first API request.
+   * In development, this is a no-op (price-cache.json is used directly).
+   *
+   * @param boostLevel - Boost level to use for prices (default: 5)
+   */
+  async loadPriceOverlayFromBlob(boostLevel: number = 5): Promise<void> {
+    if (this.priceOverlayLoaded) return;
+    this.priceOverlayLoaded = true;
+
+    try {
+      const { loadPriceOverlay } = await import('@/lib/price-blob');
+      const multiBoostMap = await loadPriceOverlay();
+
+      if (multiBoostMap && multiBoostMap.size > 0) {
+        // Extract prices for the requested boost level
+        const priceMap = new Map<number, { price: number; recordedAt: string }>();
+        for (const [spid, boosts] of multiBoostMap) {
+          const entry = boosts.get(boostLevel) ?? boosts.get(5);
+          if (entry) {
+            priceMap.set(spid, entry);
+          }
+        }
+
+        if (priceMap.size > 0) {
+          this.applyPriceOverlay(priceMap);
+        }
+      }
+    } catch {
+      // Non-critical — seed prices will be used
+    }
   }
 
   // ---------------------------------------------------------------------------

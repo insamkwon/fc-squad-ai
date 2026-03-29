@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import type { Player } from "@/types/player";
 import {
   STAT_KEYS,
@@ -9,7 +8,7 @@ import {
   getPositionColor,
   getStatValueColor,
 } from "@/lib/stat-utils";
-import { getPlayerImageUrl } from "@/lib/player-utils";
+import PlayerImage from "@/components/player/PlayerImage";
 
 interface CompactPlayerCardProps {
   player: Player;
@@ -76,14 +75,13 @@ export default function CompactPlayerCard({
       {/* ── Player image (full & pitch modes) ── */}
       {!isMicro && (
         <div className={`relative flex justify-center ${isPitch ? "pt-1 pb-0.5" : "pt-2 pb-1"}`}>
-          <div className="relative h-12 w-12 overflow-hidden rounded-md bg-gray-800 sm:h-14 sm:w-14">
-            <Image
-              src={getPlayerImageUrl(player.pid)}
-              alt={player.name}
-              fill
-              sizes="48px"
-              className="sm:sizes-[56px] object-cover"
-              unoptimized
+          <div className="relative h-12 w-12 overflow-hidden rounded-md sm:h-14 sm:w-14">
+            <PlayerImage
+              spid={player.spid}
+              name={player.name}
+              nameEn={player.nameEn}
+              position={player.position}
+              size="md"
             />
           </div>
         </div>

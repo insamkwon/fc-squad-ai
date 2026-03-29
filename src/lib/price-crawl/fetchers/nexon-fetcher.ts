@@ -216,7 +216,7 @@ export class NexonFetcher {
           covered.add(`${Math.floor(e.spid / 10)}_${e.spid % 10}`);
         }
 
-        const BOOST_LEVELS = [1, 2, 3, 4, 5, 6, 7];
+        const BOOST_LEVELS = [1, 2, 3, 4, 5, 6, 7, 8];
         const tradePairs: Array<{ spid: number; n1strong: number }> = [];
         for (const spid of tradeSpids) {
           for (const n1 of BOOST_LEVELS) {
@@ -404,7 +404,7 @@ export class NexonFetcher {
           if (seenSpids.has(p.spid)) continue;
           seenSpids.add(p.spid);
 
-          for (let n1 = 1; n1 <= 7; n1++) {
+          for (let n1 = 1; n1 <= 8; n1++) {
             const price = p.boostPrices.get(n1);
             if (price === undefined || price <= 0) continue;
             if (price < MIN_MEANINGFUL_PRICE || price > MAX_REASONABLE_PRICE) continue;

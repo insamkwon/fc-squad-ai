@@ -551,28 +551,45 @@ export class CrawlEngine {
       const allPrices = this.priceCache.getAllPrices();
       if (allPrices.size === 0) return;
 
-      // Build price map keyed by ORIGINAL spid (not encoded spid).
-      // Price cache stores encoded spid (spid*10 + n1strong), but PlayerStore
-      // uses original spid. We decode and keep the configured boost level price.
+      // Build single-boost price map for PlayerStore (uses defaultBoostLevel).
       const targetBoost = this.config.defaultBoostLevel;
       const priceMap = new Map<number, { price: number; recordedAt: string }>();
+      // Build multi-boost price map for Vercel Blob persistence.
+      const multiBoostMap: Map<number, Map<number, { price: number; recordedAt: string }>> = new Map();
+
       for (const [encodedSpid, entry] of allPrices) {
         if (entry.source !== 'seed') {
           const originalSpid = Math.floor(encodedSpid / 10);
-          const existing = priceMap.get(originalSpid);
           const boost = encodedSpid % 10;
+
+          // Single-boost: pick targetBoost price (for in-memory PlayerStore)
+          const existing = priceMap.get(originalSpid);
           if (!existing || boost === targetBoost) {
             priceMap.set(originalSpid, {
               price: entry.price,
               recordedAt: entry.recordedAt,
             });
           }
+
+          // Multi-boost: store all boost levels (for Blob persistence)
+          if (!multiBoostMap.has(originalSpid)) {
+            multiBoostMap.set(originalSpid, new Map());
+          }
+          multiBoostMap.get(originalSpid)!.set(boost, {
+            price: entry.price,
+            recordedAt: entry.recordedAt,
+          });
         }
       }
 
       if (priceMap.size > 0) {
         const { playerStore } = await import('@/lib/player-store');
         playerStore.applyPriceOverlay(priceMap);
+      }
+
+      if (multiBoostMap.size > 0) {
+        const { savePriceOverlay } = await import('@/lib/price-blob');
+        await savePriceOverlay(multiBoostMap);
       }
     } catch (err) {
       console.warn(

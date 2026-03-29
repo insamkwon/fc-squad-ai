@@ -2,14 +2,15 @@
  * Player-related utility functions.
  */
 
-const NEXON_CDN_BASE = "https://fconline.nexon.com/live/externalAssets/common";
+const NEXON_CDN_BASE =
+  "https://fo4.dn.nexoncdn.co.kr/live/externalAssets/common";
 
 /**
- * Returns the Nexon CDN URL for a player's face portrait.
- * Uses PID (base player ID) since the face is the same across all season cards.
+ * Returns the CDN URL for a player's face portrait.
+ * Uses SPID (season-specific player ID) for the Nexon CDN.
  *
- * @param pid - Base player ID (e.g., 101001)
+ * @param spid - Season-specific player ID (e.g., 110190043)
  */
-export function getPlayerImageUrl(pid: number): string {
-  return `${NEXON_CDN_BASE}/players/p${pid}.png`;
+export function getPlayerImageUrl(spid: number): string {
+  return `${NEXON_CDN_BASE}/players/p${spid}.png`;
 }

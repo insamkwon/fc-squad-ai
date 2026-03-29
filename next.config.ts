@@ -12,12 +12,10 @@ const nextConfig: NextConfig = {
 
   // Image optimization settings
   images: {
-    // For now we use SVG and inline assets — no remote image domains needed.
-    // Add remotePatterns here if player face images are added later.
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "fconline.nexon.com",
+        hostname: "fo4.dn.nexoncdn.co.kr",
         pathname: "/live/externalAssets/**",
       },
     ],

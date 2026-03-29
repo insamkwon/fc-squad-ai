@@ -13,6 +13,8 @@ import { applySquadDefaults } from '@/constants/squad-defaults';
 // ---------------------------------------------------------------------------
 
 export async function POST(request: NextRequest) {
+  await playerStore.loadPriceOverlayFromBlob();
+
   let body: {
     formation: string;
     budget?: number;

@@ -13,6 +13,7 @@ import { Position, POSITION_CATEGORIES, CARD_TYPES, CardType } from '@/types/pla
 //   seasonId    — Numeric season ID filter
 //   cardType    — Card type filter (BASE|SPECIAL|ICON|LIVE|MOM|POTW)
 //   seasonYear  — Season year filter (e.g. "24/25")
+//   boostLevel  — Player boost level for prices (1–8, default 5)
 //   minOvr      — Minimum OVR
 //   maxOvr      — Maximum OVR
 //   minPrice    — Minimum price (raw number, in BP)
@@ -45,6 +46,15 @@ const MAX_SEARCH_LENGTH = 100;
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
+
+  // Parse boostLevel for price selection (default: +5강)
+  const rawBoostLevel = searchParams.get('boostLevel');
+  const boostLevel = rawBoostLevel
+    ? Math.min(Math.max(Number(rawBoostLevel), 1), 8)
+    : 5;
+
+  // Load fresh prices from Vercel Blob overlay (no-op in development)
+  await playerStore.loadPriceOverlayFromBlob(boostLevel);
 
   // --- Parse text search query ---
   const rawSearch = searchParams.get('search') ?? '';

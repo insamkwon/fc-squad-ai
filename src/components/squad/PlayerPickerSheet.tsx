@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import type { Player } from '@/types/player';
 import type { SlotSelection } from '@/hooks/useSquadBuilder';
@@ -8,10 +7,9 @@ import { getPositionCompatibility } from '@/lib/formation-layout';
 import {
   formatPrice,
   getOvrBadgeColor,
-  getPositionColor,
   getStatValueColor,
 } from '@/lib/stat-utils';
-import { getPlayerImageUrl } from '@/lib/player-utils';
+import PlayerImage from '@/components/player/PlayerImage';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -455,14 +453,13 @@ export default function PlayerPickerSheet({
                 } ${isCurrentPlayer ? 'bg-blue-500/10 border border-blue-500/20' : ''}`}
               >
                 {/* Player image + OVR badge */}
-                <div className="relative flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-800">
-                  <Image
-                    src={getPlayerImageUrl(player.pid)}
-                    alt={player.name}
-                    fill
-                    sizes="40px"
-                    className="object-cover"
-                    unoptimized
+                <div className="relative flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg">
+                  <PlayerImage
+                    spid={player.spid}
+                    name={player.name}
+                    nameEn={player.nameEn}
+                    position={player.position}
+                    size="sm"
                   />
                   <span
                     className={`absolute bottom-0 right-0 flex h-4 w-4 items-center justify-center rounded-sm text-[8px] font-extrabold ${getOvrBadgeColor(player.stats.ovr)}`}

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import type { Player } from "@/types/player";
 import {
   STAT_KEYS,
@@ -8,9 +7,9 @@ import {
   getOvrBadgeColor,
   getPositionColor,
 } from "@/lib/stat-utils";
-import { getPlayerImageUrl } from "@/lib/player-utils";
 import SeasonBadge from "@/components/player/SeasonBadge";
 import StatBar from "@/components/player/StatBar";
+import PlayerImage from "@/components/player/PlayerImage";
 
 interface PlayerCardProps {
   player: Player;
@@ -36,17 +35,14 @@ export default function PlayerCard({ player, selected = false, onClick }: Player
       <div className="flex gap-2.5 p-2.5 sm:gap-3 sm:p-3">
         {/* Player image */}
         <div className="relative flex-shrink-0">
-          <div className="relative flex h-14 w-14 overflow-hidden rounded-lg bg-gradient-to-br from-gray-700 to-gray-800 sm:h-20 sm:w-20">
-            <Image
-              src={getPlayerImageUrl(player.pid)}
-              alt={player.name}
-              fill
-              sizes="56px"
-              className="sm:sizes-[80px] object-cover"
-              unoptimized
+          <div className="relative flex h-14 w-14 overflow-hidden rounded-lg sm:h-20 sm:w-20">
+            <PlayerImage
+              spid={player.spid}
+              name={player.name}
+              nameEn={player.nameEn}
+              position={player.position}
+              size="lg"
             />
-            {/* Subtle gradient overlay for depth */}
-            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
           </div>
           {/* Position badge */}
           <span
