@@ -520,7 +520,7 @@ describe('applySquadDefaults', () => {
   // -----------------------------------------------------------------------
   it('should fill in default strictness when budget has max but no strictness', () => {
     const request: ParsedSquadRequest = {
-      budget: { max: 1_000_000_000 },
+      budget: { max: 1_000_000_000, strictness: 'flexible' },
       confidence: 0.5,
     };
     const { request: result, applied } = applySquadDefaults(request);

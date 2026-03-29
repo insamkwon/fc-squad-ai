@@ -20,13 +20,13 @@ const SEASONS = [
   { id: 70, name: "KFA" },
 ];
 
-function formatEok(value: string): string {
+function formatJo(value: string): string {
   const num = parseFloat(value);
   if (isNaN(num) || value === "") return "";
-  return `${(num * 100_000_000).toLocaleString()}`;
+  return `${(num * 1_000_000_000_000).toLocaleString()}`;
 }
 
-function parseEok(value: string): string {
+function parseJo(value: string): string {
   const num = parseFloat(value);
   if (isNaN(num)) return "";
   return `${num}`;
@@ -260,17 +260,17 @@ export default function PlayerFilterSidebar({
 
       {/* Price range */}
       <div>
-        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">가격 범위 (억)</h3>
+        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">가격 범위 (조)</h3>
         <div className="flex items-center gap-2">
           <input
             type="number"
             min={0}
-            step={0.1}
+            step={1}
             placeholder="최소"
-            value={filter.minPrice != null ? parseEok((filter.minPrice / 100_000_000).toFixed(1)) : ""}
+            value={filter.minPrice != null ? parseJo((filter.minPrice / 1_000_000_000_000).toFixed(1)) : ""}
             onChange={(e) =>
               updateFilter({
-                minPrice: e.target.value ? Number(formatEok(e.target.value)) : undefined,
+                minPrice: e.target.value ? Number(formatJo(e.target.value)) : undefined,
               })
             }
             className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-xs text-white placeholder-gray-600 outline-none focus:border-gray-600"
@@ -279,12 +279,12 @@ export default function PlayerFilterSidebar({
           <input
             type="number"
             min={0}
-            step={0.1}
+            step={1}
             placeholder="최대"
-            value={filter.maxPrice != null ? parseEok((filter.maxPrice / 100_000_000).toFixed(1)) : ""}
+            value={filter.maxPrice != null ? parseJo((filter.maxPrice / 1_000_000_000_000).toFixed(1)) : ""}
             onChange={(e) =>
               updateFilter({
-                maxPrice: e.target.value ? Number(formatEok(e.target.value)) : undefined,
+                maxPrice: e.target.value ? Number(formatJo(e.target.value)) : undefined,
               })
             }
             className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-xs text-white placeholder-gray-600 outline-none focus:border-gray-600"

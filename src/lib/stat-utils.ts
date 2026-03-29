@@ -48,37 +48,52 @@ export const MAX_STAT_VALUE = 99;
 // ---------------------------------------------------------------------------
 
 /**
- * Format a player price in Korean notation (억/만).
+ * Format a player price in Korean notation (경/조/억/만).
  *
  * Examples:
- *   formatPrice(5_200_000_000) → "52.0억"
- *   formatPrice(35_000_000)   → "3500만"
- *   formatPrice(0)            → "0만"
+ *   formatPrice(15_100_000_000_000_000) → "1경 5,100조"
+ *   formatPrice(310_000_000_000_000)    → "310조"
+ *   formatPrice(5_200_000_000)          → "52.0억"
+ *   formatPrice(35_000_000)             → "3,500만"
+ *   formatPrice(0)                      → "-"
  */
 export function formatPrice(price: number): string {
-  const eok = price / 100_000_000;
-  if (eok >= 1) return `${eok.toFixed(1)}억`;
-  const man = Math.round(price / 10_000);
-  return `${man}만`;
+  if (!price || price <= 0) return '-';
+
+  const gyeong = Math.floor(price / 1_000_000_000_000_000);
+  const jo = Math.floor((price % 1_000_000_000_000_000) / 1_000_000_000_000);
+  const eok = Math.floor((price % 1_000_000_000_000) / 100_000_000);
+  const man = Math.floor((price % 100_000_000) / 10_000);
+
+  if (gyeong > 0) {
+    const parts: string[] = [];
+    parts.push(`${gyeong}경`);
+    if (jo > 0) parts.push(`${jo.toLocaleString()}조`);
+    return parts.join(' ');
+  }
+  if (jo > 0) {
+    return `${jo.toLocaleString()}조`;
+  }
+  if (eok > 0) {
+    const eokRemainder = price % 100_000_000;
+    if (eokRemainder === 0) {
+      return `${eok.toLocaleString()}억`;
+    }
+    return `${eok}.${String(eokRemainder).padStart(8, '0').slice(0, 1)}억`;
+  }
+  if (man > 0) return `${man.toLocaleString()}만`;
+  return `${price.toLocaleString()}`;
 }
 
 /**
- * Format a squad total cost in Korean notation (억/만) with "BP" currency suffix.
+ * Format a squad total cost in Korean notation (경/조/억/만) with "BP" suffix.
  * This is the canonical formatter for squad-level cost display.
- *
- * Examples:
- *   formatCost(5_200_000_000) → "52.0억 BP"
- *   formatCost(35_000_000)   → "3500만 BP"
- *   formatCost(0)            → "0 BP"
  *
  * @param cost  Total squad cost in raw BP units
  */
 export function formatCost(cost: number): string {
-  if (cost <= 0) return '0 BP';
-  const eok = cost / 100_000_000;
-  if (eok >= 1) return `${eok.toFixed(1)}억 BP`;
-  const man = Math.round(cost / 10_000);
-  return `${man}만 BP`;
+  if (!cost || cost <= 0) return '0 BP';
+  return `${formatPrice(cost)} BP`;
 }
 
 /**

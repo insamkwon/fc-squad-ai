@@ -62,6 +62,14 @@ export class CrawlEngine {
   }
 
   /**
+   * Set a provider that returns all player SPIDs from the database.
+   * Used by NexonFetcher to expand price coverage beyond dailytrade.
+   */
+  setDbSpidProvider(provider: () => Array<{ spid: number; ovr: number }>): void {
+    this.nexonFetcher.setDbSpidProvider(provider);
+  }
+
+  /**
    * Set the player lookup function for resolving names to spids.
    * Must be called before running the crawl if Inven data is used.
    */
@@ -127,7 +135,12 @@ export class CrawlEngine {
 
     try {
       // Step 1: Run fetchers concurrently
-      const fetcherPromises: Promise<FetcherResult>[] = [this.invenFetcher.fetch()];
+      const fetcherPromises: Promise<FetcherResult>[] = [];
+
+      // InvenFetcher is currently non-functional (page structure changed) — skip
+      // if (this.invenFetcher.isConfigured) {
+      //   fetcherPromises.push(this.invenFetcher.fetch());
+      // }
 
       if (this.config.enableNexonVerification) {
         fetcherPromises.push(this.nexonFetcher.fetch());
@@ -304,9 +317,9 @@ export class CrawlEngine {
     console.log(`[CrawlEngine] Manual crawl ${crawlId} started at ${startedAt}`);
 
     try {
-      // Run fetchers
+      // Run fetchers (InvenFetcher skipped — page structure changed, non-functional)
       const fetcherResults = await Promise.allSettled([
-        this.invenFetcher.fetch(),
+        // this.invenFetcher.fetch(),
         this.config.enableNexonVerification
           ? this.nexonFetcher.fetch()
           : Promise.resolve({
@@ -538,13 +551,22 @@ export class CrawlEngine {
       const allPrices = this.priceCache.getAllPrices();
       if (allPrices.size === 0) return;
 
+      // Build price map keyed by ORIGINAL spid (not encoded spid).
+      // Price cache stores encoded spid (spid*10 + n1strong), but PlayerStore
+      // uses original spid. We decode and keep the best (lowest boost = most traded) price.
       const priceMap = new Map<number, { price: number; recordedAt: string }>();
-      for (const [spid, entry] of allPrices) {
+      for (const [encodedSpid, entry] of allPrices) {
         if (entry.source !== 'seed') {
-          priceMap.set(spid, {
-            price: entry.price,
-            recordedAt: entry.recordedAt,
-          });
+          const originalSpid = Math.floor(encodedSpid / 10);
+          const existing = priceMap.get(originalSpid);
+          // Prefer +1강 (most actively traded) — lowest boost level
+          const boost = encodedSpid % 10;
+          if (!existing || boost === 1 || (existing.price > entry.price && boost < 3)) {
+            priceMap.set(originalSpid, {
+              price: entry.price,
+              recordedAt: entry.recordedAt,
+            });
+          }
         }
       }
 

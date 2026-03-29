@@ -30,7 +30,9 @@ import { parseTeamColors, findTeam } from './team-resolver';
 // Helper to extract the raw SQLite client from Drizzle's db wrapper
 // ---------------------------------------------------------------------------
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getRawSqlite(db: ReturnType<typeof getDb>): any {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (db as any).$client;
 }
 
@@ -398,7 +400,7 @@ export async function seedFromCsv(options: SeedOptions = {}): Promise<SeedResult
   // -----------------------------------------------------------------------
   // Phase 2: Check if database already has this data
   // -----------------------------------------------------------------------
-  let db = getDb();
+  const db = getDb();
   const schemaCreated = ensureSchema(db, logger);
 
   if (!force) {

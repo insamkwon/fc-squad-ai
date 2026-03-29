@@ -73,16 +73,24 @@ export async function GET(request: Request) {
     let nexonTradeData: Map<number, { spid: number; avgPrice: number; minPrice: number; maxPrice: number; tradeCount: number; date: string }> =
       new Map();
 
-    if (nexonFetcher.isConfigured) {
-      try {
-        const tradeData = await nexonFetcher.fetchDataCenterTradeData();
-        for (const td of tradeData) {
-          nexonTradeData.set(td.spid, td);
-        }
-      } catch {
-        // Nexon data unavailable — verification will show all as 'no_data'
-        console.warn('[VerificationAPI] Could not fetch Nexon trade data for verification.');
+    try {
+      const result = await nexonFetcher.fetch();
+      for (const entry of result.entries) {
+        const meta = (entry as unknown as Record<string, unknown>)._meta as
+          | Record<string, unknown>
+          | undefined;
+        nexonTradeData.set(entry.spid, {
+          spid: entry.spid,
+          avgPrice: Number(meta?.avgPrice ?? entry.price),
+          minPrice: Number(meta?.minPrice ?? entry.price),
+          maxPrice: Number(meta?.maxPrice ?? entry.price),
+          tradeCount: Number(meta?.tradeCount ?? 0),
+          date: String(meta?.date ?? ''),
+        });
       }
+    } catch {
+      // Nexon data unavailable — verification will show all as 'no_data'
+      console.warn('[VerificationAPI] Could not fetch Nexon trade data for verification.');
     }
 
     // Filter spids if requested

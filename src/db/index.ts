@@ -88,6 +88,7 @@ export function getDb() {
  */
 export function resetDb() {
   if (_db) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sqlite = (_db as any).$client;
     sqlite.close();
     _db = null;

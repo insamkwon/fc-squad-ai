@@ -13,11 +13,20 @@ function makeMockPlayer(overrides: Partial<Player> = {}): Player {
     name: '손흥민',
     nameEn: 'Son Heungmin',
     seasonId: 67,
-    teamId: 1,
-    leagueId: 1,
+    seasonName: 'TOTNUCL (23/24)',
+    seasonSlug: 'totnucl-2324',
+    cardType: 'SPECIAL',
+    seasonYear: '23/24',
+    releaseDate: '2024-06-10',
     position: 'ST' as const,
+    teamId: 1,
+    teamName: '토트넘',
+    teamNameEn: 'Tottenham',
+    leagueId: 1,
+    leagueName: 'EPL',
     stats: { ovr: 90, pace: 88, shooting: 90, passing: 80, dribbling: 87, defending: 40, physical: 65 },
     price: 5_000_000_000,
+    priceUpdatedAt: '2024-01-01T00:00:00Z',
     ...overrides,
   };
 }
@@ -138,8 +147,8 @@ describe('SquadFilterForm - API request body construction', () => {
     // Simulate the request body building logic from the component
     const formation: Formation = '4-3-3';
     const pinnedPlayers: Player[] = [];
-    const budgetRange = {};
-    const teamColorSelection: TeamColorSelection | null = null;
+    const budgetRange: { min?: number; max?: number } = {};
+    const teamColorSelection = null as TeamColorSelection | null;
 
     const requestBody: Record<string, unknown> = {
       formation,
@@ -328,7 +337,7 @@ describe('SquadFilterForm - Pinned player spid building', () => {
 
 describe('SquadFilterForm - Active filter count logic', () => {
   it('should count 0 active filters for default state', () => {
-    const budgetRange = {};
+    const budgetRange: { min?: number; max?: number } = {};
     const teamColorSelection = null;
 
     let count = 0;
@@ -340,7 +349,7 @@ describe('SquadFilterForm - Active filter count logic', () => {
   });
 
   it('should count budget max as active filter', () => {
-    const budgetRange = { max: 500 };
+    const budgetRange: { min?: number; max?: number } = { max: 500 };
     const teamColorSelection = null;
 
     let count = 0;
@@ -352,7 +361,7 @@ describe('SquadFilterForm - Active filter count logic', () => {
   });
 
   it('should count budget min as active filter', () => {
-    const budgetRange = { min: 100 };
+    const budgetRange: { min?: number; max?: number } = { min: 100 };
     const teamColorSelection = null;
 
     let count = 0;
@@ -364,7 +373,7 @@ describe('SquadFilterForm - Active filter count logic', () => {
   });
 
   it('should count both budget range and team color as active', () => {
-    const budgetRange = { min: 50, max: 500 };
+    const budgetRange: { min?: number; max?: number } = { min: 50, max: 500 };
     const teamColorSelection: TeamColorSelection = {
       primary: '#FF0000',
       secondary: '#0000FF',
@@ -381,7 +390,7 @@ describe('SquadFilterForm - Active filter count logic', () => {
   });
 
   it('should not count budget min of 0 as active', () => {
-    const budgetRange = { min: 0 };
+    const budgetRange: { min?: number; max?: number } = { min: 0 };
     const teamColorSelection = null;
 
     let count = 0;
@@ -393,7 +402,7 @@ describe('SquadFilterForm - Active filter count logic', () => {
   });
 
   it('should not count budget max of 2000 as active', () => {
-    const budgetRange = { max: 2000 };
+    const budgetRange: { min?: number; max?: number } = { max: 2000 };
     const teamColorSelection = null;
 
     let count = 0;

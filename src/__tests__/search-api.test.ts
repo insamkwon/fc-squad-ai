@@ -285,13 +285,13 @@ console.log('\n🔍 Test 11: Text normalization');
 // ============================================================================
 console.log('\n🔍 Test 12: Legacy searchPlayers compatibility');
 {
-  const result = playerStore.searchPlayers({ search: '손흥민' });
+  const result = playerStore.searchPlayers({ search: '손흥민', positions: [] });
   assert(result.length > 0, 'Legacy searchPlayers with Korean query works');
 
-  const filterResult = playerStore.searchPlayers({ positions: ['ST'], minOvr: 90 });
+  const filterResult = playerStore.searchPlayers({ search: '', positions: ['ST'], minOvr: 90 });
   assert(filterResult.length > 0, 'Legacy searchPlayers with position + OVR filter works');
 
-  const teamFilter = playerStore.searchPlayers({ teamId: 1 });
+  const teamFilter = playerStore.searchPlayers({ search: '', positions: [], teamId: 1 });
   assert(teamFilter.length >= 0, 'Legacy searchPlayers with team filter works');
 }
 

@@ -24,6 +24,7 @@ export default function Navigation() {
 
   // Close mobile menu on route change
   useEffect(() => {
+    // eslint-disable-next-line -- intentionally sync state on route change
     setMobileOpen(false);
   }, [pathname]);
 

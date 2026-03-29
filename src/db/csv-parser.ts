@@ -18,6 +18,7 @@ export interface CsvRow {
  * @returns Array of row objects, where each key is a header column name
  */
 export function parseCsvFile(filePath: string): CsvRow[] {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { readFileSync } = require('node:fs') as typeof import('node:fs');
   const raw = readFileSync(filePath, 'utf-8').replace(/^\uFEFF/, ''); // Strip BOM
   return parseCsvString(raw);
@@ -90,6 +91,7 @@ export function parseCsvString(csv: string): CsvRow[] {
  * Useful for validating CSV structure before full parsing.
  */
 export function parseCsvHeaders(filePath: string): string[] {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { readFileSync } = require('node:fs') as typeof import('node:fs');
   const raw = readFileSync(filePath, 'utf-8').replace(/^\uFEFF/, '');
   const firstNewline = raw.indexOf('\n');

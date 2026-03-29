@@ -76,6 +76,7 @@ export function useSquadBuilder(
 
   // Track initial state for modification detection
   const initialPlayersRef = useRef<SquadPlayer[]>(initialPlayers ?? []);
+  // eslint-disable-next-line react-hooks/purity -- unique ID only computed once via useRef initialization
   const squadIdRef = useRef<string>(`squad-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
 
   // Get all formation slots

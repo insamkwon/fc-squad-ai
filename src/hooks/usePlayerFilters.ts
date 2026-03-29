@@ -186,6 +186,7 @@ export function usePlayerFilters(): UsePlayerFiltersReturn {
     // Skip if this change originated from our own push
     const currentUrlStr = searchParams.toString();
     if (lastPushedRef.current === currentUrlStr) return;
+    // eslint-disable-next-line -- sync URL params into filter state
     setFilterState(filterFromUrl);
   }, [filterFromUrl, searchParams]);
 

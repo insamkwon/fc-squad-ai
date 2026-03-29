@@ -73,7 +73,7 @@ export async function POST(request: Request) {
   const engine = getCrawlEngine();
 
   // Set up player lookup for name resolution
-  setupPlayerLookup(engine);
+  await setupPlayerLookup(engine);
 
   if (body.force) {
     const result = await engine.runManualCrawl();
@@ -104,7 +104,7 @@ async function executeCrawl(): Promise<NextResponse<CrawlResult>> {
   const engine = getCrawlEngine();
 
   // Set up player lookup for name resolution
-  setupPlayerLookup(engine);
+  await setupPlayerLookup(engine);
 
   // Check if we can crawl (rate limit)
   if (!engine.canCrawl()) {
@@ -182,30 +182,33 @@ function verifyAuth(request: Request): NextResponse | null {
 /**
  * Set up player lookup on the crawl engine.
  * Uses the PlayerStore's search functionality to resolve names to spids.
+ * Must be awaited before running the crawl to avoid race conditions.
  */
-function setupPlayerLookup(engine: Awaited<ReturnType<typeof import('@/lib/price-crawl/crawl-engine').getCrawlEngine>>): void {
+async function setupPlayerLookup(engine: Awaited<ReturnType<typeof import('@/lib/price-crawl/crawl-engine').getCrawlEngine>>): Promise<void> {
   if (engine.status === 'idle') {
     try {
       // Dynamic import to avoid circular dependencies and keep the module
       // tree clean for client-side bundling
-      void import('@/lib/player-store').then(({ playerStore }) => {
-        if (playerStore) {
-          engine.setPlayerLookup((name: string) => {
-            // Use suggestPlayers for name-based lookup
-            const players = playerStore.suggestPlayers(name, 10);
-            return players.map((p: { spid: number; name: string; seasonName: string }) => ({
-              spid: p.spid,
-              name: p.name,
-              seasonName: p.seasonName,
-            }));
-          });
-        }
-      }).catch((err: unknown) => {
-        console.warn(
-          '[CrawlAPI] Could not set up player lookup:',
-          err instanceof Error ? err.message : err,
-        );
-      });
+      const { playerStore } = await import('@/lib/player-store');
+      if (playerStore) {
+        engine.setPlayerLookup((name: string) => {
+          // Use suggestPlayers for name-based lookup
+          const players = playerStore.suggestPlayers(name, 10);
+          return players.map((p: { spid: number; name: string; seasonName: string }) => ({
+            spid: p.spid,
+            name: p.name,
+            seasonName: p.seasonName,
+          }));
+        });
+
+        // Also provide player SPIDs with OVR for expanded price discovery
+        engine.setDbSpidProvider(() => {
+          return playerStore.getAllPlayers().map((p: { spid: number; stats: { ovr: number } }) => ({
+            spid: p.spid,
+            ovr: p.stats.ovr,
+          }));
+        });
+      }
     } catch (err) {
       console.warn(
         '[CrawlAPI] Could not set up player lookup:',

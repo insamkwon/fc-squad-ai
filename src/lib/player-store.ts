@@ -119,6 +119,7 @@ function loadFromDatabase(): Player[] | null {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { getDb } = require('@/db');
     const db = getDb();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sqlite = (db as any).$client;
     const rows = sqlite
       .prepare(
@@ -272,7 +273,7 @@ class PlayerStore {
    */
   searchPlayersAdvanced(
     query: string,
-    filter?: Omit<PlayerFilter, 'search'>,
+    filter?: Partial<Omit<PlayerFilter, 'search'>>,
     pagination?: PaginationOptions,
   ): PaginatedResult<Player> {
     this.ensureInit();
@@ -283,7 +284,7 @@ class PlayerStore {
     // Skip empty queries — return empty result (or apply filters only)
     if (!normalizedQuery) {
       const baseFiltered = filter
-        ? this.searchPlayers({ ...filter, search: '' })
+        ? this.searchPlayers({ ...filter, search: '', positions: filter.positions ?? [] })
         : this.players;
       const sorted = [...baseFiltered].sort((a, b) => b.stats.ovr - a.stats.ovr);
       const limit = Math.min(Math.max(pagination?.limit ?? 20, 1), 100);
