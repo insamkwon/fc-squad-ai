@@ -93,7 +93,7 @@ export default function FormationPitch({ children, className = '', teamColors }:
 
   return (
     <div
-      className={`relative w-full mx-auto formation-pitch-container ${className}`}
+      className={`relative w-full max-w-md mx-auto formation-pitch-container shadow-2xl shadow-black/40 ${className}`}
       style={{
         aspectRatio: `${PITCH.viewBoxW} / ${PITCH.viewBoxH}`,
         touchAction: 'manipulation',
@@ -104,7 +104,6 @@ export default function FormationPitch({ children, className = '', teamColors }:
       <svg
         viewBox={`0 0 ${PITCH.viewBoxW} ${PITCH.viewBoxH}`}
         className="w-full h-auto rounded-xl overflow-hidden"
-        style={{ willChange: 'transform' }}
         xmlns="http://www.w3.org/2000/svg"
         preserveAspectRatio="xMidYMid meet"
         role="img"
@@ -151,7 +150,7 @@ export default function FormationPitch({ children, className = '', teamColors }:
                 width={PITCH.fw}
                 height={stripeH}
                 fill={i % 2 === 0 ? GRASS_DARK : GRASS_LIGHT}
-                opacity="0.45"
+                opacity="0.55"
               />
             );
           })}

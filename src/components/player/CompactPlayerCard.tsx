@@ -66,7 +66,7 @@ export default function CompactPlayerCard({
         overflow-hidden rounded-lg border transition-all duration-150
         ${selected
           ? "border-yellow-500 bg-gray-800/95 ring-1 ring-yellow-500/40"
-          : "border-white/10 bg-gray-900/95"
+          : "border-white/10 bg-gray-900/95 shadow-lg shadow-black/30"
         }
         ${isPitch ? "w-[72px] sm:w-20" : isMicro ? "w-[52px]" : ""}
         ${className}
@@ -153,7 +153,7 @@ export default function CompactPlayerCard({
         }`}>
           {STAT_KEYS.map(({ key, short }) => (
             <div key={key} className="flex items-center justify-between gap-0.5">
-              <span className={`font-medium text-white/35 uppercase tracking-wide ${
+              <span className={`font-medium text-white/50 uppercase tracking-wide ${
                 isPitch ? "text-[8px]" : "text-[9px]"
               }`}>
                 {short}

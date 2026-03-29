@@ -73,7 +73,7 @@ export default function PlayerSlot({
         <button
           type="button"
           className={`
-            cursor-pointer transition-transform duration-150
+            cursor-pointer transition-transform duration-150 group
             ${editing ? 'hover:scale-110 active:scale-95 ring-1 ring-green-400/40 rounded-lg' : 'hover:scale-105 active:scale-95'}
             tap-target-formation
           `}
@@ -89,12 +89,10 @@ export default function PlayerSlot({
           <CompactPlayerCard player={player} mode={cardMode} />
           {/* Editing indicator overlay (hidden in micro mode for space) */}
           {editing && !isMicro && (
-            <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/0 hover:bg-black/20 transition-colors pointer-events-none">
-              <div className="opacity-0 hover:opacity-100 transition-opacity">
-                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
-                </svg>
-              </div>
+            <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/0 group-hover:bg-black/30 transition-colors pointer-events-none">
+              <svg className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+              </svg>
             </div>
           )}
         </button>

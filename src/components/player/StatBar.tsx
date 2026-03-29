@@ -50,16 +50,16 @@ export default function StatBar({
 
   // Highlight classes for the fill bar
   const bestClasses = "ring-1 ring-yellow-400/60 shadow-[0_0_6px_rgba(250,204,21,0.25)]";
-  const worstClasses = "opacity-40";
+  const worstClasses = "opacity-50";
 
   return (
     <div className={`flex items-center gap-1.5 ${className}`}>
-      <div className={`w-full rounded-full bg-gray-800 ${SIZE_CLASSES[size]}`}>
+      <div className={`w-full rounded-full bg-gray-700/60 ${SIZE_CLASSES[size]}`}>
         <div
           className={`h-full rounded-full transition-all duration-500 ease-out ${color} ${
             isBest ? bestClasses : isWorst ? worstClasses : ""
           } ${animate ? "origin-left animate-[grow_0.6s_ease-out]" : ""}`}
-          style={{ width: `${percent}%` }}
+          style={{ width: `${Math.max(percent, 3)}%` }}
         />
       </div>
       {showValue && (
