@@ -14,7 +14,13 @@ const nextConfig: NextConfig = {
   images: {
     // For now we use SVG and inline assets — no remote image domains needed.
     // Add remotePatterns here if player face images are added later.
-    remotePatterns: [],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "fconline.nexon.com",
+        pathname: "/live/externalAssets/**",
+      },
+    ],
   },
 
   // Native modules that should not be bundled by webpack/turbopack.

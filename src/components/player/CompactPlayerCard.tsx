@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import type { Player } from "@/types/player";
 import {
   STAT_KEYS,
@@ -8,6 +9,7 @@ import {
   getPositionColor,
   getStatValueColor,
 } from "@/lib/stat-utils";
+import { getPlayerImageUrl } from "@/lib/player-utils";
 
 interface CompactPlayerCardProps {
   player: Player;
@@ -70,6 +72,22 @@ export default function CompactPlayerCard({
         ${className}
       `}
     >
+      {/* ── Player image (full & pitch modes) ── */}
+      {!isMicro && (
+        <div className={`relative flex justify-center ${isPitch ? "pt-1.5 pb-0.5" : "pt-2 pb-1"}`}>
+          <div className="relative h-10 w-10 overflow-hidden rounded-md bg-gray-800 sm:h-12 sm:w-12">
+            <Image
+              src={getPlayerImageUrl(player.pid)}
+              alt={player.name}
+              fill
+              sizes="40px"
+              className="sm:sizes-[48px] object-cover"
+              unoptimized
+            />
+          </div>
+        </div>
+      )}
+
       {/* ── Top: OVR badge + position ── */}
       <div className={`flex items-start justify-between ${
         isMicro ? "px-1 pt-1 pb-0" : isPitch ? "px-1.5 pt-1.5 pb-0.5" : "px-2 pt-2 pb-1"
