@@ -553,15 +553,15 @@ export class CrawlEngine {
 
       // Build price map keyed by ORIGINAL spid (not encoded spid).
       // Price cache stores encoded spid (spid*10 + n1strong), but PlayerStore
-      // uses original spid. We decode and keep the best (lowest boost = most traded) price.
+      // uses original spid. We decode and keep the configured boost level price.
+      const targetBoost = this.config.defaultBoostLevel;
       const priceMap = new Map<number, { price: number; recordedAt: string }>();
       for (const [encodedSpid, entry] of allPrices) {
         if (entry.source !== 'seed') {
           const originalSpid = Math.floor(encodedSpid / 10);
           const existing = priceMap.get(originalSpid);
-          // Prefer +1강 (most actively traded) — lowest boost level
           const boost = encodedSpid % 10;
-          if (!existing || boost === 1 || (existing.price > entry.price && boost < 3)) {
+          if (!existing || boost === targetBoost) {
             priceMap.set(originalSpid, {
               price: entry.price,
               recordedAt: entry.recordedAt,

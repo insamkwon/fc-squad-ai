@@ -201,6 +201,8 @@ export interface CrawlEngineConfig {
   minConfidence: number;
   /** Maximum price age in hours before re-crawl is needed */
   maxPriceAgeHours: number;
+  /** Default boost level for price overlay (1-7) */
+  defaultBoostLevel: number;
 }
 
 /**
@@ -225,6 +227,7 @@ export const DEFAULT_CRAWL_CONFIG: CrawlEngineConfig = {
   enableNexonVerification: true,
   minConfidence: 0.3,
   maxPriceAgeHours: 24,
+  defaultBoostLevel: 5,
 };
 
 /** Cron schedule times in KST (UTC+9) */

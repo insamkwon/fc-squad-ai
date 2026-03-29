@@ -352,7 +352,7 @@ function parsePlayerRow(
     defending,
     physical,
     rawStats,
-    price: salary > 0 ? salary * 100000 : 0,
+    price: salary > 0 ? salary * 100000000 : 0,
     priceUpdatedAt: now,
     updatedAt: now,
     priceSource: 'seed',
