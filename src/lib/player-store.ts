@@ -144,7 +144,8 @@ class PlayerStore {
   private players: Player[];
   private searchIndex: Map<number, SearchIndexEntry>;
   private initialized = false;
-  private priceOverlayLoaded = false;
+  private priceOverlayBoostLevel: number | null = null;
+  private multiBoostPriceCache: import('@/lib/price-blob').MultiBoostPriceMap | null = null;
 
   constructor() {
     this.players = [];
@@ -466,17 +467,20 @@ class PlayerStore {
    * @param boostLevel - Boost level to use for prices (default: 5)
    */
   async loadPriceOverlayFromBlob(boostLevel: number = 5): Promise<void> {
-    if (this.priceOverlayLoaded) return;
-    this.priceOverlayLoaded = true;
+    if (this.priceOverlayBoostLevel === boostLevel) return;
+    this.priceOverlayBoostLevel = boostLevel;
 
     try {
-      const { loadPriceOverlay } = await import('@/lib/price-blob');
-      const multiBoostMap = await loadPriceOverlay();
+      // Load from Blob once, cache in memory for subsequent boostLevel switches
+      if (!this.multiBoostPriceCache) {
+        const { loadPriceOverlay } = await import('@/lib/price-blob');
+        this.multiBoostPriceCache = await loadPriceOverlay();
+      }
 
-      if (multiBoostMap && multiBoostMap.size > 0) {
+      if (this.multiBoostPriceCache && this.multiBoostPriceCache.size > 0) {
         // Extract prices for the requested boost level
         const priceMap = new Map<number, { price: number; recordedAt: string }>();
-        for (const [spid, boosts] of multiBoostMap) {
+        for (const [spid, boosts] of this.multiBoostPriceCache) {
           const entry = boosts.get(boostLevel) ?? boosts.get(5);
           if (entry) {
             priceMap.set(spid, entry);
