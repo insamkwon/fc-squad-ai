@@ -3,7 +3,6 @@
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Player } from "@/types/player";
-import { MOCK_PLAYERS, generateMockPlayers } from "@/data/mock-players";
 import PlayerCompareView from "@/components/player/PlayerCompareView";
 
 export default function ComparePage() {
@@ -31,7 +30,6 @@ function ComparePageInner() {
   const router = useRouter();
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
-  const [allPlayers, setAllPlayers] = useState<Player[]>([]);
 
   const spids = useMemo(() => {
     const raw = searchParams.get("spids");
@@ -44,26 +42,29 @@ function ComparePageInner() {
 
   useEffect(() => {
     async function loadPlayers() {
+      if (spids.length < 2) {
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       try {
-        const data = generateMockPlayers(200);
-        setAllPlayers(data);
+        const res = await fetch("/api/players/compare", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ spids }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setPlayers(data.players ?? []);
+        }
       } catch {
-        setAllPlayers(MOCK_PLAYERS);
+        // Silently fail — players stays empty
       } finally {
         setLoading(false);
       }
     }
     loadPlayers();
-  }, []);
-
-  useEffect(() => {
-    if (allPlayers.length === 0) return;
-    const selected = spids
-      .map((spid) => allPlayers.find((p) => p.spid === spid))
-      .filter((p): p is Player => p !== undefined);
-    setPlayers(selected);
-  }, [allPlayers, spids]);
+  }, [spids]);
 
   useEffect(() => {
     if (!loading && spids.length < 2) {
