@@ -69,19 +69,20 @@ export default function CompactPlayerCard({
           ? "border-yellow-500 bg-gray-800/95 ring-1 ring-yellow-500/40"
           : "border-white/10 bg-gray-900/95"
         }
+        ${isPitch ? "w-[72px] sm:w-20" : isMicro ? "w-[52px]" : ""}
         ${className}
       `}
     >
       {/* ── Player image (full & pitch modes) ── */}
       {!isMicro && (
-        <div className={`relative flex justify-center ${isPitch ? "pt-1.5 pb-0.5" : "pt-2 pb-1"}`}>
-          <div className="relative h-10 w-10 overflow-hidden rounded-md bg-gray-800 sm:h-12 sm:w-12">
+        <div className={`relative flex justify-center ${isPitch ? "pt-1 pb-0.5" : "pt-2 pb-1"}`}>
+          <div className="relative h-12 w-12 overflow-hidden rounded-md bg-gray-800 sm:h-14 sm:w-14">
             <Image
               src={getPlayerImageUrl(player.pid)}
               alt={player.name}
               fill
-              sizes="40px"
-              className="sm:sizes-[48px] object-cover"
+              sizes="48px"
+              className="sm:sizes-[56px] object-cover"
               unoptimized
             />
           </div>
@@ -90,7 +91,7 @@ export default function CompactPlayerCard({
 
       {/* ── Top: OVR badge + position ── */}
       <div className={`flex items-start justify-between ${
-        isMicro ? "px-1 pt-1 pb-0" : isPitch ? "px-1.5 pt-1.5 pb-0.5" : "px-2 pt-2 pb-1"
+        isMicro ? "px-1 pt-1 pb-0" : isPitch ? "px-1.5 pt-1 pb-0.5" : "px-2 pt-2 pb-1"
       }`}>
         {/* OVR badge */}
         <span
@@ -98,8 +99,8 @@ export default function CompactPlayerCard({
             isMicro
               ? "h-5 w-5 text-[10px]"
               : isPitch
-                ? "h-7 w-7 text-xs"
-                : "h-8 w-8 text-sm"
+                ? "h-6 w-6 text-xs"
+                : "h-7 w-7 text-xs"
           } ${getOvrBadgeColor(stats.ovr)}`}
         >
           {stats.ovr}
@@ -110,7 +111,9 @@ export default function CompactPlayerCard({
           className={`flex items-center justify-center rounded font-bold text-white ${
             isMicro
               ? "h-4 px-1 text-[8px]"
-              : "h-5 px-1.5 text-[10px]"
+              : isPitch
+                ? "h-5 px-1.5 text-[10px]"
+                : "h-5 px-1.5 text-[10px]"
           } ${getPositionColor(player.position)}`}
         >
           {player.position}
@@ -120,9 +123,14 @@ export default function CompactPlayerCard({
       {/* ── Player name ── */}
       {!isMicro && (
         <div className={`min-w-0 ${isPitch ? "px-1.5 pb-0.5" : "px-2 pb-1"}`}>
-          <p className={`truncate font-semibold text-white leading-tight ${isPitch ? "text-[10px]" : "text-xs"}`}>
-            {player.nameEn || player.name}
+          <p className={`truncate font-semibold text-white leading-tight ${isPitch ? "text-[11px]" : "text-xs"}`}>
+            {player.name}
           </p>
+          {isPitch && (
+            <p className="truncate text-[9px] text-white/40 leading-tight">
+              {player.nameEn}
+            </p>
+          )}
           {!isPitch && (
             <p className="truncate text-[10px] text-white/50 leading-tight">
               {player.teamNameEn || player.teamName}
@@ -143,7 +151,7 @@ export default function CompactPlayerCard({
       {/* ── Stats grid (visible in pitch and full modes) ── */}
       {!isMicro && (
         <div className={`grid grid-cols-3 gap-x-1 gap-y-px border-t border-white/8 ${
-          isPitch ? "px-1.5 py-1" : "px-2 py-1.5"
+          isPitch ? "px-1.5 py-0.5" : "px-2 py-1.5"
         }`}>
           {STAT_KEYS.map(({ key, short }) => (
             <div key={key} className="flex items-center justify-between gap-0.5">
@@ -154,7 +162,7 @@ export default function CompactPlayerCard({
               </span>
               <span
                 className={`font-bold tabular-nums leading-none ${getStatValueColor(stats[key])} ${
-                  isPitch ? "text-[9px]" : "text-[10px]"
+                  isPitch ? "text-[10px]" : "text-[10px]"
                 }`}
               >
                 {stats[key]}
@@ -166,7 +174,7 @@ export default function CompactPlayerCard({
 
       {/* ── Price (visible in pitch and full modes) ── */}
       {!isMicro && (
-        <div className={`border-t border-white/8 ${isPitch ? "px-1.5 py-1" : "px-2 py-1.5"}`}>
+        <div className={`border-t border-white/8 ${isPitch ? "px-1.5 py-0.5" : "px-2 py-1.5"}`}>
           <p className={`font-bold text-yellow-400 tabular-nums ${
             isPitch ? "text-[10px]" : "text-[11px]"
           }`}>

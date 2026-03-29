@@ -57,8 +57,8 @@ export default function FormationView({
 
   // Compact mode uses tighter max-width constraints
   const pitchClassName = compact
-    ? 'w-full max-w-[200px] sm:max-w-[240px]'
-    : 'w-full max-w-[calc(100vw-2rem)] sm:max-w-[28rem] md:max-w-[32rem] lg:max-w-[36rem]';
+    ? 'w-full max-w-[180px] sm:max-w-[220px]'
+    : 'w-full max-w-[calc(100vw-1.5rem)] sm:max-w-[30rem] md:max-w-[34rem] lg:max-w-[38rem]';
 
   const editingRing = editing ? 'ring-1 ring-green-400/20 rounded-xl' : '';
 

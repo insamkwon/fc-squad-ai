@@ -45,6 +45,8 @@ export default function PlayerCard({ player, selected = false, onClick }: Player
               className="sm:sizes-[80px] object-cover"
               unoptimized
             />
+            {/* Subtle gradient overlay for depth */}
+            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
           </div>
           {/* Position badge */}
           <span
