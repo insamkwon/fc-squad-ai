@@ -47,7 +47,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# data (generated from CSV/DB)
+# data (generated from CSV/DB/crawl)
+/data/price-cache.json
+/data/crawl-history.json
 /data/players.json
 /data/fc-squad.db
 /data/fc-squad.db-wal
