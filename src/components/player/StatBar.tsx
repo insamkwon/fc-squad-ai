@@ -30,10 +30,10 @@ const SIZE_CLASSES = {
 } as const;
 
 /**
- * A single horizontal stat bar indicator with an optional numeric value.
+ * A horizontal stat bar with gradient fill and subtle glow for high stats.
  *
- * Used inside player cards and comparison views to visualize individual
- * player stats (pace, shooting, etc.) as colored progress bars.
+ * High-value stats (85+) get a soft luminous glow effect.
+ * Best-in-comparison stats pulse with a golden ring.
  */
 export default function StatBar({
   value,
@@ -47,19 +47,33 @@ export default function StatBar({
   animate = false,
 }: StatBarProps) {
   const percent = statBarPercent(value, max);
+  const isHigh = value >= 85;
+  const isElite = value >= 90;
 
-  // Highlight classes for the fill bar
-  const bestClasses = "ring-1 ring-yellow-400/60 shadow-[0_0_6px_rgba(250,204,21,0.25)]";
-  const worstClasses = "opacity-50";
+  const bestClasses = "ring-1 ring-yellow-400/60 shadow-[0_0_6px_rgba(250,204,21,0.3)]";
+  const worstClasses = "opacity-40";
+
+  // Build gradient classes for the fill
+  const glowClasses = isElite
+    ? "shadow-[0_0_8px_var(--glow-color,rgba(255,255,255,0.2))]"
+    : isHigh
+      ? "shadow-[0_0_4px_var(--glow-color,rgba(255,255,255,0.1))]"
+      : "";
 
   return (
     <div className={`flex items-center gap-1.5 ${className}`}>
-      <div className={`w-full rounded-full bg-gray-700/60 ${SIZE_CLASSES[size]}`}>
+      <div className={`w-full rounded-full bg-gray-700/50 ${SIZE_CLASSES[size]}`}>
         <div
           className={`h-full rounded-full transition-all duration-500 ease-out ${color} ${
             isBest ? bestClasses : isWorst ? worstClasses : ""
-          } ${animate ? "origin-left animate-[grow_0.6s_ease-out]" : ""}`}
-          style={{ width: `${Math.max(percent, 3)}%` }}
+          } ${glowClasses} ${animate ? "origin-left animate-[grow_0.6s_ease-out]" : ""}`}
+          style={{
+            width: `${Math.max(percent, 3)}%`,
+            // Apply a subtle gradient overlay for depth
+            backgroundImage: isHigh
+              ? "linear-gradient(90deg, transparent 60%, rgba(255,255,255,0.15))"
+              : "linear-gradient(90deg, transparent 70%, rgba(255,255,255,0.05))",
+          }}
         />
       </div>
       {showValue && (
@@ -68,8 +82,12 @@ export default function StatBar({
             isBest
               ? "font-bold text-yellow-300"
               : isWorst
-                ? "font-medium text-gray-500"
-                : "font-semibold text-gray-300"
+                ? "font-medium text-gray-600"
+                : isElite
+                  ? "font-bold text-white"
+                  : isHigh
+                    ? "font-semibold text-gray-200"
+                    : "font-semibold text-gray-400"
           }`}
         >
           {value}

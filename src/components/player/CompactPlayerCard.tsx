@@ -1,6 +1,7 @@
 "use client";
 
 import type { Player } from "@/types/player";
+import type { CardType } from "@/types/player";
 import {
   STAT_KEYS,
   formatPrice,
@@ -33,6 +34,18 @@ interface CompactPlayerCardProps {
 }
 
 /**
+ * Card type → top accent strip gradient.
+ */
+const CARD_TYPE_STRIP: Record<CardType, string> = {
+  BASE: "from-gray-500/50 to-transparent",
+  SPECIAL: "from-amber-400/70 to-transparent",
+  ICON: "from-purple-400/70 to-transparent",
+  LIVE: "from-emerald-400/70 to-transparent",
+  MOM: "from-cyan-400/70 to-transparent",
+  POTW: "from-sky-400/70 to-transparent",
+};
+
+/**
  * FUTBIN-style compact player card displaying OVR rating, key stats,
  * player name, position, and price.
  *
@@ -44,9 +57,6 @@ interface CompactPlayerCardProps {
  * - **"micro"**: Ultra-compact for mobile chat/embedded contexts — OVR,
  *   position, and name only (no stats grid, no price). Designed to fit
  *   within ~200-240px pitch containers without overlapping.
- *
- * Design follows the project's dark theme conventions with position-aware
- * color coding and OVR tier badges.
  */
 export default function CompactPlayerCard({
   player,
@@ -59,6 +69,7 @@ export default function CompactPlayerCard({
 
   const isPitch = mode === "pitch";
   const isMicro = mode === "micro";
+  const strip = CARD_TYPE_STRIP[player.cardType] ?? CARD_TYPE_STRIP.BASE;
 
   const cardContent = (
     <div
@@ -66,16 +77,21 @@ export default function CompactPlayerCard({
         overflow-hidden rounded-lg border transition-all duration-150
         ${selected
           ? "border-yellow-500 bg-gray-800/95 ring-1 ring-yellow-500/40"
-          : "border-white/10 bg-gray-900/95 shadow-lg shadow-black/30"
+          : "border-white/10 bg-gray-900/95 shadow-lg shadow-black/40"
         }
         ${isPitch ? "w-[72px] sm:w-20" : isMicro ? "w-[52px]" : ""}
         ${className}
       `}
     >
+      {/* ── Card type accent strip (top edge) ── */}
+      {!isMicro && (
+        <div className={`h-[3px] w-full bg-gradient-to-r ${strip}`} />
+      )}
+
       {/* ── Player image (full & pitch modes) ── */}
       {!isMicro && (
         <div className={`relative flex justify-center ${isPitch ? "pt-1 pb-0.5" : "pt-2 pb-1"}`}>
-          <div className="relative h-12 w-12 overflow-hidden rounded-md sm:h-14 sm:w-14">
+          <div className="relative h-12 w-12 overflow-hidden rounded-md sm:h-14 sm:w-14 ring-1 ring-white/10">
             <PlayerImage
               spid={player.spid}
               name={player.name}
@@ -148,13 +164,13 @@ export default function CompactPlayerCard({
 
       {/* ── Stats grid (visible in pitch and full modes) ── */}
       {!isMicro && (
-        <div className={`grid grid-cols-3 gap-x-1 gap-y-px border-t border-white/8 ${
+        <div className={`grid grid-cols-3 gap-x-1 gap-y-px border-t border-white/5 ${
           isPitch ? "px-1.5 py-0.5" : "px-2 py-1.5"
         }`}>
           {STAT_KEYS.map(({ key, short }) => (
             <div key={key} className="flex items-center justify-between gap-0.5">
-              <span className={`font-medium text-white/50 uppercase tracking-wide ${
-                isPitch ? "text-[8px]" : "text-[9px]"
+              <span className={`font-medium text-white/40 uppercase tracking-wider ${
+                isPitch ? "text-[7px]" : "text-[9px]"
               }`}>
                 {short}
               </span>
@@ -172,8 +188,8 @@ export default function CompactPlayerCard({
 
       {/* ── Price (visible in pitch and full modes) ── */}
       {!isMicro && (
-        <div className={`border-t border-white/8 ${isPitch ? "px-1.5 py-0.5" : "px-2 py-1.5"}`}>
-          <p className={`font-bold text-yellow-400 tabular-nums ${
+        <div className={`border-t border-white/5 ${isPitch ? "px-1.5 py-0.5" : "px-2 py-1.5"}`}>
+          <p className={`font-bold tabular-nums text-yellow-400/90 ${
             isPitch ? "text-[10px]" : "text-[11px]"
           }`}>
             {formatPrice(player.price)}
