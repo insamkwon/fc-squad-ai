@@ -56,3 +56,4 @@ next-env.d.ts
 /data/fc-squad-slim.db
 /drizzle/
 /src/data/players-bundle.ts
+.env*.local

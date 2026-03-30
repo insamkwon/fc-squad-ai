@@ -45,19 +45,6 @@ export interface ChatMessage {
 }
 
 // ---------------------------------------------------------------------------
-// Conversation
-// ---------------------------------------------------------------------------
-
-/** The full conversation state (array of messages + metadata). */
-export interface Conversation {
-  messages: ChatMessage[];
-  /** Auto-generated conversation title (for future use). */
-  title?: string;
-  /** When the conversation was started. */
-  createdAt: number;
-}
-
-// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 

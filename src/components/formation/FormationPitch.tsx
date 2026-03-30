@@ -93,7 +93,7 @@ export default function FormationPitch({ children, className = '', teamColors }:
 
   return (
     <div
-      className={`relative w-full max-w-md mx-auto formation-pitch-container shadow-2xl shadow-black/40 ${className}`}
+      className={`relative w-full mx-auto formation-pitch-container shadow-2xl shadow-black/40 ${className}`}
       style={{
         aspectRatio: `${PITCH.viewBoxW} / ${PITCH.viewBoxH}`,
         touchAction: 'manipulation',

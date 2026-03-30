@@ -55,10 +55,14 @@ function ComparePageInner() {
         });
         if (res.ok) {
           const data = await res.json();
-          setPlayers(data.players ?? []);
+          // API returns PlayerCompareItem[] — extract player objects
+          const items = Array.isArray(data) ? data : data.players ?? [];
+          setPlayers(items.map((item: { player?: Player } | Player) =>
+            'player' in item ? item.player : item,
+          ));
         }
-      } catch {
-        // Silently fail — players stays empty
+      } catch (err) {
+        console.error('[compare] Failed to load players:', err);
       } finally {
         setLoading(false);
       }

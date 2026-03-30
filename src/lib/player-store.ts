@@ -1,5 +1,4 @@
 import { Player, PlayerFilter, PlayerRawStats, Position, POSITION_CATEGORIES } from '@/types/player';
-import { generateMockPlayers } from '@/data/mock-players';
 import {
   SearchIndexEntry,
   SearchResult,
@@ -168,10 +167,9 @@ class PlayerStore {
         this.players = dbPlayers;
         console.log(`[player-store] Loaded ${this.players.length} players from SQLite database`);
       } else {
-        // Strategy 3: Mock data (last resort)
-        console.log('[player-store] No data source available, using mock data');
-        console.log('[player-store] Run "npm run seed" to populate the database from details.csv');
-        this.players = generateMockPlayers(200);
+        // No data source available — return empty
+        console.error('[player-store] No data source available. Run "npm run seed" to populate the database.');
+        this.players = [];
       }
     }
 
